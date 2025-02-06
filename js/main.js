@@ -44,16 +44,45 @@ new Vue({
 
             const newCard = {
                 title: prompt('Введите заголовок карточки:'),
-                items: Array.from({ length: 3 }, () => ({
-                    text: prompt('Введите пункт списка:'),
-                    completed: false
-                })),
+                items: [],
                 index: this.columns[columnIndex].cards.length,
                 completedDate: null,
                 locked: false
             };
+            for (let i = 0; i < 3; i++) {
+                newCard.items.push({
+                    text: prompt('Введите пункт списка:'),
+                    completed: false
+                });
+            }
+            let addMore = confirm('Хотите ли добавить ещё пункт?');
+            while (addMore && newCard.items.length < 5) {
+                // Пользователь может добавить 1 или 2 пункта
+                let count = prompt('Сколько пунктов вы хотите добавить? (1 или 2)');
+                count = parseInt(count, 10);
+
+                if (count === 1 || count === 2) {
+                    for (let i = 0; i < count; i++) {
+                        if (newCard.items.length < 5) {
+                            newCard.items.push({
+                                text: prompt('Введите пункт списка:'),
+                                completed: false
+                            });
+                        } else {
+                            alert('Достигнуто максимальное количество пунктов (5).');
+                            break;
+                        }
+                    }
+                } else {
+                    alert('Пожалуйста, введите 1 или 2.');
+                }
+
+
+                addMore = confirm('Готово');
+            }
             this.columns[columnIndex].cards.push(newCard);
         },
+
 
         // перемещение карточки
         moveCard(fromColumn, toColumn, cardIndex) {
