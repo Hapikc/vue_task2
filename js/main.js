@@ -13,3 +13,19 @@ new Vue({
         };
     }
 });
+
+
+Vue.component('note-card', {
+    props: ['card', 'columnIndex'],
+    template: `
+        <div class="note-card">
+            <h3>{{ card.title }}</h3>
+            <ul>
+                <li v-for="(item, index) in card.items" :key="index">
+                    <input type="checkbox"/>
+                    {{ item.text }}
+                </li>
+            </ul>
+        </div>
+    `
+});
