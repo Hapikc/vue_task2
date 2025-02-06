@@ -37,11 +37,6 @@ new Vue({
                 return;
             }
 
-            if (columnIndex === 1 && this.columns[1].cards.length >= this.maxCardsInColumn2) {
-                alert('Второй столбец уже заполнен!');
-                return;
-            }
-
             const newCard = {
                 title: prompt('Введите заголовок карточки:'),
                 items: [],
@@ -67,6 +62,7 @@ new Vue({
                             newCard.items.push({
                                 text: prompt('Введите пункт списка:'),
                                 completed: false
+
                             });
                         } else {
                             alert('Достигнуто максимальное количество пунктов (5).');
@@ -79,6 +75,7 @@ new Vue({
 
 
                 addMore = confirm('Готово');
+                break
             }
             this.columns[columnIndex].cards.push(newCard);
         },
@@ -86,6 +83,11 @@ new Vue({
 
         // перемещение карточки
         moveCard(fromColumn, toColumn, cardIndex) {
+            if (toColumn === 1 && this.columns[1].cards.length >= this.maxCardsInColumn2) {
+                alert('Вторая колонка уже заполнена!');
+                return;
+            }
+
             const card = this.columns[fromColumn].cards.splice(cardIndex, 1)[0];
             card.completedDate = toColumn === 2 ? new Date().toLocaleString() : null;
             card.locked = false;
@@ -105,7 +107,7 @@ new Vue({
             const totalItems = card.items.length;
 
             if (columnIndex === 0) {
-                if (completedCount / totalItems > 0.5 && this.columns[1].cards.length < this.maxCardsInColumn2) {
+                if (completedCount / totalItems > 0.5) {
                     this.moveCard(0, 1, cardIndex);
                 } else if (completedCount === totalItems) {
                     this.moveCard(0, 2, cardIndex);
