@@ -11,6 +11,22 @@ new Vue({
             maxCardsInColumn2: 5,
             isColumn1Locked: false
         };
+    },
+
+    methods: {
+        addCard(columnIndex) {
+            const newCard = {
+                title: prompt('Введите заголовок:'),
+                items: Array.from({ length: 3 }, () => ({
+                    text: prompt('Введите пункт:'),
+                    completed: false
+                })),
+                index: this.columns[columnIndex].cards.length,
+                completedDate: null,
+                locked: false
+            };
+            this.columns[columnIndex].cards.push(newCard);
+        }
     }
 });
 
@@ -27,5 +43,6 @@ Vue.component('note-card', {
                 </li>
             </ul>
         </div>
-    `
+    `,
+
 });
