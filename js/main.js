@@ -37,6 +37,14 @@ new Vue({
             const card = this.columns[columnIndex].cards[cardIndex];
             card.items[itemIndex].completed = !card.items[itemIndex].completed;
             },
+    checkLockState() {
+        if (this.columns[1].cards.length >= this.maxCardsInColumn2) {
+            this.isColumn1Locked = this.columns[0].cards.some(card =>
+                card.items.filter(item => item.completed).length / card.items.length > 0.5
+            );
+        }
+        this.columns[0].cards.forEach(card => (card.locked = this.isColumn1Locked));
+    }
 
 
 
