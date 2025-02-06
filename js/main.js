@@ -31,7 +31,14 @@ new Vue({
         const card = this.columns[fromColumn].cards.splice(cardIndex, 1)[0];
         card.completedDate = toColumn === 2 ? new Date().toLocaleString() : null;
         this.columns[toColumn].cards.push(card);
-    }
+    },
+        updateItem(payload) {
+            const { cardIndex, itemIndex, columnIndex } = payload;
+            const card = this.columns[columnIndex].cards[cardIndex];
+            card.items[itemIndex].completed = !card.items[itemIndex].completed;
+            },
+
+
 
 });
 
@@ -49,5 +56,14 @@ Vue.component('note-card', {
             </ul>
         </div>
     `,
+    methods: {
+        toggleItem(index) {
+            this.$emit('update-item', {
+                cardIndex: this.card.index,
+                itemIndex: index,
+                columnIndex: this.columnIndex
+            });
+        }
+    }
 
 });
