@@ -27,7 +27,12 @@ new Vue({
             };
             this.columns[columnIndex].cards.push(newCard);
         }
+    }, moveCard(fromColumn, toColumn, cardIndex) {
+        const card = this.columns[fromColumn].cards.splice(cardIndex, 1)[0];
+        card.completedDate = toColumn === 2 ? new Date().toLocaleString() : null;
+        this.columns[toColumn].cards.push(card);
     }
+
 });
 
 
