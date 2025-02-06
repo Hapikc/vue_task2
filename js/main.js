@@ -23,7 +23,7 @@ new Vue({
                     :column-index="columnIndex"
                     @update-item="updateItem"
                 ></note-card>
-                <button @click="addCard(columnIndex)" :disabled="columnIndex === 1 && columns[1].cards.length >= maxCardsInColumn2">
+                <button v-if="columnIndex === 0" @click="addCard(columnIndex)" :disabled="columnIndex === 1 && columns[1].cards.length >= maxCardsInColumn2">
                     Добавить карточку
                 </button>
             </div>
