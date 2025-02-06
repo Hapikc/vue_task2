@@ -101,21 +101,33 @@ new Vue({
             const { cardIndex, itemIndex, columnIndex } = payload;
             const card = this.columns[columnIndex].cards[cardIndex];
 
+            // Изменяем состояние пункта
             card.items[itemIndex].completed = !card.items[itemIndex].completed;
 
+            // Считаем количество выполненных пунктов
             const completedCount = card.items.filter(item => item.completed).length;
             const totalItems = card.items.length;
 
+            // Логика перемещения карточки
             if (columnIndex === 0) {
                 if (completedCount / totalItems > 0.5) {
                     this.moveCard(0, 1, cardIndex);
                 } else if (completedCount === totalItems) {
                     this.moveCard(0, 2, cardIndex);
                 }
+            } else if (columnIndex === 1) {
+                if (completedCount === totalItems) {
+                    this.moveCard(1, 2, cardIndex);
+                } else if (completedCount / totalItems <= 0.5) {
+                    this.moveCard(1, 0, cardIndex);
+                }
+            } else if (columnIndex === 2) {
+                if (completedCount < totalItems) {
+                    this.moveCard(2, 1, cardIndex);
+                }
             }
-            if (columnIndex === 1 && completedCount === totalItems) {
-                this.moveCard(1, 2, cardIndex);
-            }
+
+            // Проверка состояния блокировки
             this.checkLockState();
         },
 
