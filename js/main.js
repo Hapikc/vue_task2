@@ -23,9 +23,13 @@ new Vue({
                     :column-index="columnIndex"
                     @update-item="updateItem"
                 ></note-card>
-                <button v-if="columnIndex === 0" @click="addCard(columnIndex)" :disabled="columnIndex === 1 && columns[1].cards.length >= maxCardsInColumn2">
-                    Добавить карточку
-                </button>
+                    <button 
+                        v-if="columnIndex === 0" 
+                        @click="addCard(columnIndex)" 
+                        :disabled="columns[0].cards.length >= maxCardsInColumn1"
+                    >
+                        Добавить карточку
+                    </button>
             </div>
         </div>
     `,
@@ -33,9 +37,11 @@ new Vue({
         // добавление карточки
         addCard(columnIndex) {
             if (columnIndex === 0 && this.columns[0].cards.length >= this.maxCardsInColumn1) {
-                alert('Первый столбец уже заполнен!');
+                alert('Первая колонка уже заполнен!');
                 return;
             }
+
+
 
             const newCard = {
                 id: Date.now() + Math.random(),
@@ -84,7 +90,12 @@ new Vue({
 
         // перемещение карточки
         moveCard(fromColumn, toColumn, cardId) {
-            // Находим карточку по ID
+            // Проверка лимита для второй колонки
+            if (toColumn === 1 && this.columns[1].cards.length >= this.maxCardsInColumn2) {
+                alert('Вторая колонка уже заполнена!');
+                return;
+            }
+
             const cardIndex = this.columns[fromColumn].cards.findIndex(c => c.id === cardId);
             if (cardIndex === -1) return;
 
@@ -96,13 +107,11 @@ new Vue({
 
         // обновление состояния
         checkLockState() {
-            if (this.columns[1].cards.length >= this.maxCardsInColumn2) {
-                this.isColumn1Locked = this.columns[0].cards.some(card =>
+            this.isColumn1Locked = this.columns[1].cards.length >= this.maxCardsInColumn2
+                && this.columns[0].cards.some(card =>
                     card.items.filter(item => item.completed).length / card.items.length > 0.5
                 );
-            } else {
-                this.isColumn1Locked = false;
-            }
+
             this.columns[0].cards.forEach(card => (card.locked = this.isColumn1Locked));
         },
 
