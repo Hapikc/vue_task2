@@ -38,6 +38,7 @@ new Vue({
             }
 
             const newCard = {
+                id: Date.now() + Math.random(),
                 title: prompt('Введите заголовок карточки:'),
                 items: [],
                 index: this.columns[columnIndex].cards.length,
@@ -82,24 +83,39 @@ new Vue({
 
 
         // перемещение карточки
-        moveCard(fromColumn, toColumn, cardIndex) {
-            if (toColumn === 1 && this.columns[1].cards.length >= this.maxCardsInColumn2) {
-                alert('Вторая колонка уже заполнена!');
-                return;
-            }
+        moveCard(fromColumn, toColumn, cardId) {
+            // Находим карточку по ID
+            const cardIndex = this.columns[fromColumn].cards.findIndex(c => c.id === cardId);
+            if (cardIndex === -1) return;
 
             const card = this.columns[fromColumn].cards.splice(cardIndex, 1)[0];
             card.completedDate = toColumn === 2 ? new Date().toLocaleString() : null;
             card.locked = false;
             this.columns[toColumn].cards.push(card);
-
-            this.columns[toColumn].cards.forEach((c, i) => (c.index = i));
         },
 
         // обновление состояния
+        checkLockState() {
+            if (this.columns[1].cards.length >= this.maxCardsInColumn2) {
+                this.isColumn1Locked = this.columns[0].cards.some(card =>
+                    card.items.filter(item => item.completed).length / card.items.length > 0.5
+                );
+            } else {
+                this.isColumn1Locked = false;
+            }
+            this.columns[0].cards.forEach(card => (card.locked = this.isColumn1Locked));
+        },
+
+        // проверка на блокировку колонок
         updateItem(payload) {
-            const { cardIndex, itemIndex, columnIndex } = payload;
-            const card = this.columns[columnIndex].cards[cardIndex];
+            const { cardId, itemIndex, columnIndex } = payload;
+
+            // Находим карточку в текущей колонке
+            const column = this.columns[columnIndex];
+            const cardIndex = column.cards.findIndex(c => c.id === cardId);
+            if (cardIndex === -1) return;
+
+            const card = column.cards[cardIndex];
 
             // Изменяем состояние пункта
             card.items[itemIndex].completed = !card.items[itemIndex].completed;
@@ -111,36 +127,24 @@ new Vue({
             // Логика перемещения карточки
             if (columnIndex === 0) {
                 if (completedCount / totalItems > 0.5) {
-                    this.moveCard(0, 1, cardIndex);
+                    this.moveCard(0, 1, card.id);
                 } else if (completedCount === totalItems) {
-                    this.moveCard(0, 2, cardIndex);
+                    this.moveCard(0, 2, card.id);
                 }
             } else if (columnIndex === 1) {
                 if (completedCount === totalItems) {
-                    this.moveCard(1, 2, cardIndex);
+                    this.moveCard(1, 2, card.id);
                 } else if (completedCount / totalItems <= 0.5) {
-                    this.moveCard(1, 0, cardIndex);
+                    this.moveCard(1, 0, card.id);
                 }
             } else if (columnIndex === 2) {
                 if (completedCount < totalItems) {
-                    this.moveCard(2, 1, cardIndex);
+                    this.moveCard(2, 1, card.id);
                 }
             }
 
             // Проверка состояния блокировки
             this.checkLockState();
-        },
-
-        // проверка на блокировку колонок
-        checkLockState() {
-            if (this.columns[1].cards.length >= this.maxCardsInColumn2) {
-                this.isColumn1Locked = this.columns[0].cards.some(card =>
-                    card.items.filter(item => item.completed).length / card.items.length > 0.5
-                );
-            } else {
-                this.isColumn1Locked = false;
-            }
-            this.columns[0].cards.forEach(card => (card.locked = this.isColumn1Locked));
         }
     },
 
@@ -171,7 +175,7 @@ Vue.component('note-card', {
         <div class="note-card" :class="{ locked: card.locked }">
             <h3>{{ card.title }}</h3>
             <ul>
-                <li v-for="(item, index) in card.items" :key="index">
+                <li v-for="(item, index) in card.items" :key="item.id">
                     <input 
                         type="checkbox" 
                         :checked="item.completed" 
@@ -186,7 +190,7 @@ Vue.component('note-card', {
     `,
     methods: {
         toggleItem(index) {
-            this.$emit('update-item', { cardIndex: this.card.index, itemIndex: index, columnIndex: this.columnIndex });
+            this.$emit('update-item', { cardId: this.card.id, itemIndex: index, columnIndex: this.columnIndex });
         } // через $emit данные уходят родительскому элементу из дочернего
     }
 });
