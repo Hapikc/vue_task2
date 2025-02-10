@@ -59,13 +59,32 @@
 }
 
 .note-card input[type="checkbox"] {
+    margin-top: 3px;
     margin-right: 8px;
+    flex-shrink: 0;
 }
 
 .note-card p {
     margin: 8px 0 0 0;
     font-size: 14px;
     color: #888;
+}
+
+.note-card ul ul {
+    border-left: 2px solid #ddd;
+    margin: 5px 0 5px 20px;
+    padding-left: 10px;
+    border-left: 2px solid #eee;
+}
+
+.note-card ul ul li.nice {
+    display: flex;
+    align-items: center;
+    color: #666;
+}
+
+.note-card ul ul li.nice input[type="checkbox"] {
+    margin-right: 8px;
 }
 
 button {
@@ -86,4 +105,36 @@ button:disabled {
 
 button:hover:not(:disabled) {
     background-color: #0056b3;
+}
+
+.note-card li {
+    display: block;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+}
+
+.note-card li > div {
+    display: flex;
+    align-items: flex-start;
+}
+
+.note-card .item-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.note-card ul ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    color: #666;
+    white-space: normal;
+}
+
+.note-card li,
+.note-card li span {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }

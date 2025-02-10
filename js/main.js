@@ -187,40 +187,44 @@ new Vue({
 Vue.component('note-card', {
     props: ['card', 'columnIndex'],
     template: `
-            <div class="note-card" :class="{ locked: card.locked }">
-                <h3>{{ card.title }}</h3>
-                <ul>
-                    <li v-for="(item, index) in card.items" :key="index">
+        <div class="note-card" :class="{ locked: card.locked }">
+            <h3>{{ card.title }}</h3>
+            <ul>
+                <li v-for="(item, index) in card.items" :key="index">
+                    <div>
                         <input 
                             type="checkbox" 
                             :checked="item.completed" 
                             @change="toggleItem(index)" 
                             :disabled="card.locked || isItemDisabled(item)"
                         />
-                        {{ item.text }}
-                        <button @click="$emit('add-subitem', { 
-                            cardId: card.id, 
-                            itemIndex: index, 
-                            columnIndex: columnIndex 
-                        })">
-                            Добавить подпункт
-                        </button>
-                        <ul v-if="item.hasSubItems">
-                            <li v-for="(subItem, subIndex) in item.subItems" :key="subIndex">
-                                <input 
-                                    type="checkbox" 
-                                    :checked="subItem.completed" 
-                                    @change="toggleSubItem(index, subIndex)" 
-                                    :disabled="card.locked"
-                                />
-                                {{ subItem.text }}
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-                <p v-if="card.completedDate">Завершено: {{ card.completedDate }}</p>
-            </div>
-        `,
+                        <div class="item-content">
+                            <span>{{ item.text }}</span>
+                            <button @click="$emit('add-subitem', { 
+                                cardId: card.id, 
+                                itemIndex: index, 
+                                columnIndex: columnIndex 
+                            })">
+                                Добавить подпункт
+                            </button>
+                            <ul v-if="item.hasSubItems">
+                                <li v-for="(subItem, subIndex) in item.subItems" :key="subIndex">
+                                    <input 
+                                        type="checkbox" 
+                                        :checked="subItem.completed" 
+                                        @change="toggleSubItem(index, subIndex)" 
+                                        :disabled="card.locked"
+                                    />
+                                    <span>{{ subItem.text }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <p v-if="card.completedDate">Завершено: {{ card.completedDate }}</p>
+        </div>
+    `,
     computed: {
         isItemDisabled() {
             return (item) => {
